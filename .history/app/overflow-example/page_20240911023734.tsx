@@ -75,7 +75,7 @@ const OverflowingCats = () => {
       <div
         ref={parentRef}
         style={{
-          width: "80%",
+          width: "100%",
           height: "300px",
           overflow: "hidden",
           border: "1px solid black",

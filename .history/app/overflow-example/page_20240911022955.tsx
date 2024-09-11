@@ -75,42 +75,35 @@ const OverflowingCats = () => {
       <div
         ref={parentRef}
         style={{
-          width: "80%",
+          width: "100%",
           height: "300px",
           overflow: "hidden",
           border: "1px solid black",
           display: "flex",
           flexWrap: "wrap",
+          position: "relative",
         }}
       >
         {/* Render all cat images with styles to hide overflowed images */}
         {catImages.map((imgSrc, index) => (
-          <div className="relative w-max h-max" key={index}>
-            <img
-              src={imgSrc}
-              alt={`Cat ${index}`}
-              className={`transition-opacity duration-500 ${
-                visibleImages.includes(imgSrc) ? "opacity-100" : "opacity-0"
-              }`}
-              style={{
-                width: "auto",
-                height: "140px",
-                margin: "",
-              }}
-            />
-            {index === catImages.length - hiddenImages && (
-              <div
-                className="top-0 left-0 absolute h-[140px] w-[140px] flex items-center justify-center bg-red-500 text-white font-bold text-xl"
-                style={{
-                  transform: `translate(0, 0)`,
-                }}
-              >
-                {hiddenImages}
-              </div>
-            )}
-          </div>
+          <img
+            key={index}
+            src={imgSrc}
+            alt={`Cat ${index}`}
+            className={`transition-opacity duration-500 ${
+              visibleImages.includes(imgSrc) ? "opacity-100" : "opacity-0"
+            }`}
+            style={{
+              width: "auto",
+              height: "140px",
+              margin: "",
+            }}
+          />
         ))}
-        {/* Show hidden images count at the end of visible images */}
+        {/* Show hidden images count */}
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 h-[140px] w-[140px] flex items-center justify-center bg-red-500 text-white font-bold text-xl">
+          {hiddenImages}
+        </div>
       </div>
 
       {/* Display number of hidden images if there are any */}

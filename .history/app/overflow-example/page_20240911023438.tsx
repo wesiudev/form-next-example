@@ -75,7 +75,7 @@ const OverflowingCats = () => {
       <div
         ref={parentRef}
         style={{
-          width: "80%",
+          width: "100%",
           height: "300px",
           overflow: "hidden",
           border: "1px solid black",
@@ -85,8 +85,9 @@ const OverflowingCats = () => {
       >
         {/* Render all cat images with styles to hide overflowed images */}
         {catImages.map((imgSrc, index) => (
-          <div className="relative w-max h-max" key={index}>
+          <div>
             <img
+              key={index}
               src={imgSrc}
               alt={`Cat ${index}`}
               className={`transition-opacity duration-500 ${
@@ -98,11 +99,11 @@ const OverflowingCats = () => {
                 margin: "",
               }}
             />
-            {index === catImages.length - hiddenImages && (
+            {index === visibleImages.length && (
               <div
-                className="top-0 left-0 absolute h-[140px] w-[140px] flex items-center justify-center bg-red-500 text-white font-bold text-xl"
+                className="h-[140px] w-[140px] flex items-center justify-center bg-red-500 text-white font-bold text-xl"
                 style={{
-                  transform: `translate(0, 0)`,
+                  transform: `translate(${visibleImages.length * 140}px, 0)`,
                 }}
               >
                 {hiddenImages}

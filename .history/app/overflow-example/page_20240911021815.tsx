@@ -5,22 +5,25 @@ const OverflowingCats = () => {
   // Create a reference to the parent div
   const parentRef = useRef(null);
 
-  // State to track how many images are hidden and visible
+  // State to track how many images are hidden
   const [hiddenImages, setHiddenImages] = useState(0);
   const [visibleImages, setVisibleImages] = useState<string[]>([]); // Track visible images
 
+  // Timeout ID for debouncing
+  const resizeTimeout = useRef<NodeJS.Timeout | null>(null);
+
   // Array of random cat image URLs
   const catImages = [
-    "https://cataas.com/cat?1",
-    "https://cataas.com/cat?2",
-    "https://cataas.com/cat?3",
-    "https://cataas.com/cat?4",
-    "https://cataas.com/cat?5",
-    "https://cataas.com/cat?6",
-    "https://cataas.com/cat?7",
-    "https://cataas.com/cat?8",
-    "https://cataas.com/cat?9",
-    "https://cataas.com/cat?10",
+    "https://cataas.com/cat",
+    "https://cataas.com/cat",
+    "https://cataas.com/cat",
+    "https://cataas.com/cat",
+    "https://cataas.com/cat",
+    "https://cataas.com/cat",
+    "https://cataas.com/cat",
+    "https://cataas.com/cat",
+    "https://cataas.com/cat",
+    "https://cataas.com/cat",
   ];
 
   // Function to detect which images cause overflow
@@ -53,20 +56,30 @@ const OverflowingCats = () => {
     }
   };
 
-  // useEffect to detect overflow on component mount and when resizing
-  useEffect(() => {
-    // Detect overflow immediately on mount and after a short delay
-    const timeout = setTimeout(() => {
+  // Debounced resize handler
+  const handleResize = () => {
+    if (resizeTimeout.current) {
+      clearTimeout(resizeTimeout.current);
+    }
+
+    // Set timeout for 1.5 seconds
+    resizeTimeout.current = setTimeout(() => {
       detectOverflow();
-    }, 100);
+    }, 1500); // 1.5 seconds delay
+  };
 
-    // Add event listener for window resize
-    window.addEventListener("resize", detectOverflow);
+  // useEffect to detect overflow after rendering and when resizing
+  useEffect(() => {
+    detectOverflow(); // Run on mount
 
-    // Cleanup event listener on unmount
+    window.addEventListener("resize", handleResize);
+
+    // Cleanup event listener and timeout on unmount
     return () => {
-      clearTimeout(timeout);
-      window.removeEventListener("resize", detectOverflow);
+      window.removeEventListener("resize", handleResize);
+      if (resizeTimeout.current) {
+        clearTimeout(resizeTimeout.current);
+      }
     };
   }, []);
 
@@ -75,7 +88,7 @@ const OverflowingCats = () => {
       <div
         ref={parentRef}
         style={{
-          width: "80%",
+          width: "100vw",
           height: "300px",
           overflow: "hidden",
           border: "1px solid black",
@@ -83,34 +96,24 @@ const OverflowingCats = () => {
           flexWrap: "wrap",
         }}
       >
-        {/* Render all cat images with styles to hide overflowed images */}
-        {catImages.map((imgSrc, index) => (
-          <div className="relative w-max h-max" key={index}>
-            <img
-              src={imgSrc}
-              alt={`Cat ${index}`}
-              className={`transition-opacity duration-500 ${
-                visibleImages.includes(imgSrc) ? "opacity-100" : "opacity-0"
-              }`}
-              style={{
-                width: "auto",
-                height: "140px",
-                margin: "",
-              }}
-            />
-            {index === catImages.length - hiddenImages && (
-              <div
-                className="top-0 left-0 absolute h-[140px] w-[140px] flex items-center justify-center bg-red-500 text-white font-bold text-xl"
-                style={{
-                  transform: `translate(0, 0)`,
-                }}
-              >
-                {hiddenImages}
-              </div>
-            )}
-          </div>
+        {/* Render only visible cat images */}
+        {visibleImages.map((imgSrc, index) => (
+          <img
+            key={index}
+            src={imgSrc}
+            alt={`Cat ${index}`}
+            style={{
+              width: "auto",
+              height: "140px",
+              margin: "",
+            }}
+          />
         ))}
-        {/* Show hidden images count at the end of visible images */}
+
+        {/* Show hidden images count */}
+        <div className="h-max aspect-square flex items-center justify-center bg-red-500 text-white font-bold text-xl">
+          {hiddenImages}
+        </div>
       </div>
 
       {/* Display number of hidden images if there are any */}
